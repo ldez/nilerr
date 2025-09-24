@@ -67,6 +67,8 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	return nil, nil
 }
 
+// getValueLineNumbers returns the line numbers.
+// `seen` is used to avoid infinite loop.
 func getValueLineNumbers(pass *analysis.Pass, v ssa.Value, seen map[string]struct{}) []int {
 	if phi, ok := v.(*ssa.Phi); ok {
 		result := make([]int, 0, len(phi.Edges))
@@ -74,6 +76,7 @@ func getValueLineNumbers(pass *analysis.Pass, v ssa.Value, seen map[string]struc
 		for _, edge := range phi.Edges {
 			if _, ok := seen[edge.Name()]; ok {
 				if edge.Pos() == token.NoPos {
+					// Skip elements without a position.
 					continue
 				}
 
